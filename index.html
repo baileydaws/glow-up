@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Glow Up">
+<meta name="theme-color" content="#ff9466">
+<title>Glow Up — Daily Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Pacifico&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-top: #fff2e4;
+    --bg-bottom: #ffe4ea;
+    --card: #fffdfb;
+    --ink: #47303a;
+    --ink-soft: #93707d;
+    --line: #f6ddd8;
+    --coral: #ff8a5c;
+    --coral-deep: #f2673a;
+    --pink: #ff6f91;
+    --gold: #ffb648;
+    --mint: #5fb88a;
+    --mint-bg: #e3f4ea;
+    --slip-bg: #ffe6de;
+    --radius: 16px;
+    --shadow: 0 4px 14px rgba(240,120,90,0.10);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: 'Nunito', -apple-system, sans-serif;
+    color: var(--ink);
+    padding: env(safe-area-inset-top) 14px calc(env(safe-area-inset-bottom) + 82px) 14px;
+    background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    min-height: 100%;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+
+  header.top {
+    padding: 24px 4px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header.top .mark {
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 30px;
+    letter-spacing: 0;
+    color: var(--coral-deep);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  header.top .mark .emoji { font-family: 'Nunito', sans-serif; font-size: 22px; }
+  header.top .date {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: var(--card);
+    padding: 5px 11px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 17px;
+    margin-bottom: 13px;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 13px;
+  }
+  .card-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .pts-chip {
+    font-size: 12px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+  .pts-chip.zero { background: #f2e4de; color: var(--ink-soft); }
+
+  label.field-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin: 0 0 6px;
+  }
+  input[type=number], input[type=text], input[type=date], textarea, select {
+    width: 100%;
+    padding: 11px 13px;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    background: #fffaf8;
+    font-size: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--coral); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { margin-bottom: 10px; }
+  .field:last-child { margin-bottom: 0; }
+
+  /* Water tally */
+  .tally { display: flex; gap: 7px; flex-wrap: wrap; }
+  .tally-dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: #fffaf8;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .tally-dot.filled {
+    background: linear-gradient(135deg, #6fd1a3, var(--mint));
+    border-color: var(--mint);
+    color: #fff;
+  }
+
+  /* Workout day pills */
+  .day-pills { display: flex; gap: 6px; }
+  .day-pill {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0 8px;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    background: #fffaf8;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    cursor: pointer;
+    position: relative;
+  }
+  .day-pill.goal-day { border-color: var(--gold); color: var(--ink); }
+  .day-pill.done { background: linear-gradient(135deg, #6fd1a3, var(--mint)); border-color: var(--mint); color: #fff; }
+  .day-pill.bonus { background: linear-gradient(135deg, var(--pink), var(--coral-deep)); border-color: var(--coral-deep); color: #fff; }
+  .day-pill .tag {
+    display: block;
+    font-size: 8.5px;
+    letter-spacing: 0.03em;
+    margin-top: 2px;
+    opacity: 0.85;
+    text-transform: uppercase;
+  }
+
+  /* Snack check */
+  .toggle-row { display: flex; gap: 8px; }
+  .toggle-btn {
+    flex: 1;
+    padding: 11px;
+    text-align: center;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    background: #fffaf8;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .toggle-btn.active-good { background: var(--mint-bg); border-color: var(--mint); color: var(--mint); }
+  .toggle-btn.active-bad { background: var(--slip-bg); border-color: var(--coral-deep); color: var(--coral-deep); }
+
+  /* Meals */
+  .meal-entry {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .meal-entry { flex-wrap: wrap; }
+  .meal-entry select.meal-type { flex: 1 1 100%; margin-bottom: 6px; font-size: 13.5px; padding: 8px 10px; }
+  .meal-entry input[type=text] { flex: 3; }
+  .meal-entry input[type=number] { flex: 1; }
+  .meal-entry .del {
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    border: 2px solid var(--line);
+    background: #fffaf8;
+    color: var(--coral-deep);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .add-meal-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px dashed var(--line);
+    background: transparent;
+    color: var(--coral-deep);
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+    margin-top: 2px;
+  }
+  .meal-total {
+    text-align: right;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-top: 9px;
+  }
+
+  .coffee-target {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--coral-deep);
+    background: #fff1e9;
+    padding: 7px 11px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  button.save-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--pink), var(--coral-deep));
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Baloo 2', sans-serif;
+    cursor: pointer;
+    margin-top: 4px;
+    box-shadow: 0 6px 16px rgba(242,103,58,0.28);
+  }
+
+  /* Summary */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-box {
+    background: #fffaf8;
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    padding: 13px;
+  }
+  .stat-box .num {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    background: linear-gradient(135deg, var(--coral-deep), var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .stat-box .lbl {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* History */
+  .hist-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 3px;
+    border-bottom: 1.5px solid var(--line);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .hist-row:last-child { border-bottom: none; }
+  .hist-date { color: var(--ink-soft); }
+  .hist-meta { display: flex; gap: 10px; align-items: center; }
+  .hist-pts {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--coral-deep);
+  }
+  .empty-state {
+    text-align: center;
+    padding: 26px 10px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+
+  /* Tab bar */
+  nav.tabbar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1.5px solid var(--line);
+    padding: 9px calc(max(14px, env(safe-area-inset-left))) calc(env(safe-area-inset-bottom) + 8px) calc(max(14px, env(safe-area-inset-right)));
+    display: flex;
+    gap: 6px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 9px 0 8px;
+    border-radius: 12px;
+    background: none;
+    border: none;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .tab-btn.active { background: linear-gradient(135deg, var(--coral), var(--pink)); color: #fff; }
+
+  .toast {
+    position: fixed;
+    bottom: 96px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff;
+    padding: 10px 18px; border-radius: 20px;
+    font-size: 13px; font-weight: 700;
+    opacity: 0; transition: opacity 0.25s;
+    pointer-events: none; z-index: 50;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+
+<nav class="tabbar">
+  <button class="tab-btn" data-tab="today">Today</button>
+  <button class="tab-btn" data-tab="week">This Week</button>
+  <button class="tab-btn" data-tab="history">Log</button>
+</nav>
+
+<script>
+/* ---------- Config ---------- */
+const CONFIG = {
+  startWeight: 180,
+  waterGoal: 8,
+  stepsGoal: 8000,
+  workoutGoalDays: ['Tue','Thu','Fri'],
+  coffeeTaper: {
+    1: { creamer: 130, sugar: 45 },
+    2: { creamer: 110, sugar: 35 },
+    3: { creamer: 90,  sugar: 25 },
+    4: { creamer: 70,  sugar: 20 }
+  }
+};
+const DAY_ORDER = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+/* ---------- Storage (local for now) ---------- */
+const STORE_KEY = 'glowup_entries_v1';
+function loadAll() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveAll(data) {
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+}
+function todayKey(d = new Date()) {
+  return d.toISOString().split('T')[0];
+}
+function dayName(dateStr) {
+  return DAY_ORDER[new Date(dateStr + 'T12:00:00').getDay()];
+}
+
+let db = loadAll();
+let activeTab = 'today';
+let draft = null;
+
+function getEntry(dateStr) {
+  return db[dateStr] || {
+    date: dateStr,
+    weight: null,
+    water: 0,
+    steps: null,
+    workoutDone: false,
+    snackStatus: null,
+    snackNote: '',
+    creamer: null,
+    sugar: null,
+    meals: []
+  };
+}
+
+function programWeekNumber() {
+  const dates = Object.keys(db).sort();
+  const start = dates.length ? new Date(dates[0]) : new Date();
+  const diffDays = Math.floor((new Date() - start) / 86400000);
+  return Math.min(4, Math.max(1, Math.floor(diffDays / 7) + 1));
+}
+
+function computePoints(e) {
+  let pts = 0;
+  if (e.water >= CONFIG.waterGoal) pts += 1;
+  if (e.steps !== null && e.steps >= CONFIG.stepsGoal) pts += 1;
+  if (e.snackStatus) pts += 1;
+  const wk = CONFIG.coffeeTaper[programWeekNumber()];
+  if (e.creamer !== null && e.sugar !== null && wk && e.creamer <= wk.creamer && e.sugar <= wk.sugar) pts += 1;
+  const isGoalDay = CONFIG.workoutGoalDays.includes(dayName(e.date));
+  if (isGoalDay && e.workoutDone) pts += 2;
+  if (!isGoalDay && e.workoutDone) pts += 1;
+  return pts;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+/* ---------- Render: Today ---------- */
+function renderToday() {
+  const key = todayKey();
+  if (!draft || draft.date !== key) draft = JSON.parse(JSON.stringify(getEntry(key)));
+
+  const wk = CONFIG.coffeeTaper[programWeekNumber()];
+  const isGoalDay = CONFIG.workoutGoalDays.includes(dayName(key));
+  const pts = computePoints(draft);
+
+  const dateLabel = new Date(key + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+  let h = `
+  <header class="top">
+    <div class="mark">Glow Up <span class="emoji">🌸</span></div>
+    <div class="date">${dateLabel}</div>
+  </header>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">✨ Weight</div>
+      <div class="pts-chip ${pts === 0 ? 'zero' : ''}">${pts} pt${pts === 1 ? '' : 's'} today</div>
+    </div>
+    <input type="number" step="0.1" inputmode="decimal" id="in-weight" placeholder="e.g. 178.4" value="${draft.weight ?? ''}">
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">💧 Water · goal ${CONFIG.waterGoal}</div></div>
+    <div class="tally">
+      ${Array.from({length: CONFIG.waterGoal}).map((_, i) => `
+        <div class="tally-dot ${i < draft.water ? 'filled' : ''}" data-i="${i+1}">${i+1}</div>
+      `).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">👟 Steps · goal ${CONFIG.stepsGoal.toLocaleString()}</div></div>
+    <input type="number" inputmode="numeric" id="in-steps" placeholder="Check Health app, enter count" value="${draft.steps ?? ''}">
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">🔥 Workout</div></div>
+    <div class="day-pills">
+      ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => {
+        const goal = CONFIG.workoutGoalDays.includes(d);
+        const isToday = d === dayName(key);
+        let cls = goal ? 'goal-day' : '';
+        if (isToday && draft.workoutDone) cls += goal ? ' done' : ' bonus';
+        return `<div class="day-pill ${cls}" ${isToday ? 'id="today-pill"' : ''}>${d}${goal ? '<span class="tag">goal</span>' : ''}</div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:11px;">
+      <div class="toggle-row">
+        <div class="toggle-btn ${draft.workoutDone ? 'active-good' : ''}" id="btn-workout">
+          ${draft.workoutDone ? 'Logged today ✓' : 'Mark workout done'}
+        </div>
+      </div>
+      ${!isGoalDay ? '<div class="coffee-target" style="margin-top:8px;">Not a goal day — logging one anyway earns a bonus point 🎉</div>' : ''}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">🍪 Snack check-in</div></div>
+    <div class="toggle-row">
+      <div class="toggle-btn ${draft.snackStatus === 'good' ? 'active-good' : ''}" id="btn-snack-good">Stayed on track</div>
+      <div class="toggle-btn ${draft.snackStatus === 'slip' ? 'active-bad' : ''}" id="btn-snack-slip">Had a slip</div>
+    </div>
+    <div class="field" style="margin-top:9px;">
+      <textarea id="in-snacknote" rows="2" placeholder="Optional note — what happened, what you'd do differently">${draft.snackNote || ''}</textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">☕ Coffee</div></div>
+    ${wk ? `<div class="coffee-target">Week ${programWeekNumber()} target: ${wk.creamer}ml creamer / ${wk.sugar}g sugar</div>` : ''}
+    <div class="row2">
+      <div class="field">
+        <label class="field-label">Creamer (ml)</label>
+        <input type="number" inputmode="decimal" id="in-creamer" value="${draft.creamer ?? ''}">
+      </div>
+      <div class="field">
+        <label class="field-label">Sugar (g)</label>
+        <input type="number" inputmode="decimal" id="in-sugar" value="${draft.sugar ?? ''}">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">🍽️ Meals</div></div>
+    <div id="meals-list">
+      ${draft.meals.map((m, i) => `
+        <div class="meal-entry" data-i="${i}">
+          <select class="meal-type">
+            <option value="Breakfast" ${m.type === 'Breakfast' ? 'selected' : ''}>🍳 Breakfast</option>
+            <option value="Lunch" ${m.type === 'Lunch' ? 'selected' : ''}>🥪 Lunch</option>
+            <option value="Dinner" ${m.type === 'Dinner' ? 'selected' : ''}>🍽️ Dinner</option>
+            <option value="Snack" ${(!m.type || m.type === 'Snack') ? 'selected' : ''}>🍪 Snack</option>
+          </select>
+          <input type="text" class="meal-name" placeholder="What'd you eat" value="${m.name || ''}">
+          <input type="number" class="meal-cal" inputmode="numeric" placeholder="cal" value="${m.cal ?? ''}">
+          <button class="del" data-del="${i}">&times;</button>
+        </div>
+      `).join('')}
+    </div>
+    <button class="add-meal-btn" id="add-meal">+ Add meal</button>
+    <div class="meal-total">${draft.meals.reduce((s, m) => s + (Number(m.cal) || 0), 0)} cal logged</div>
+  </div>
+
+  <button class="save-btn" id="save-today">Save today's glow ✨</button>
+  `;
+
+  document.getElementById('app').innerHTML = h;
+
+  document.getElementById('in-weight').addEventListener('input', e => draft.weight = e.target.value ? parseFloat(e.target.value) : null);
+  document.getElementById('in-steps').addEventListener('input', e => draft.steps = e.target.value ? parseInt(e.target.value) : null);
+  document.getElementById('in-creamer').addEventListener('input', e => draft.creamer = e.target.value ? parseFloat(e.target.value) : null);
+  document.getElementById('in-sugar').addEventListener('input', e => draft.sugar = e.target.value ? parseFloat(e.target.value) : null);
+  document.getElementById('in-snacknote').addEventListener('input', e => draft.snackNote = e.target.value);
+
+  document.querySelectorAll('.tally-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const i = parseInt(dot.dataset.i);
+      draft.water = (draft.water === i) ? i - 1 : i;
+      renderToday();
+    });
+  });
+
+  document.getElementById('btn-workout').addEventListener('click', () => {
+    draft.workoutDone = !draft.workoutDone;
+    renderToday();
+  });
+
+  document.getElementById('btn-snack-good').addEventListener('click', () => {
+    draft.snackStatus = draft.snackStatus === 'good' ? null : 'good';
+    renderToday();
+  });
+  document.getElementById('btn-snack-slip').addEventListener('click', () => {
+    draft.snackStatus = draft.snackStatus === 'slip' ? null : 'slip';
+    renderToday();
+  });
+
+  document.getElementById('add-meal').addEventListener('click', () => {
+    draft.meals.push({ type: 'Snack', name: '', cal: null });
+    renderToday();
+  });
+  document.querySelectorAll('.meal-type').forEach(sel => {
+    sel.addEventListener('change', e => {
+      const i = parseInt(e.target.closest('.meal-entry').dataset.i);
+      draft.meals[i].type = e.target.value;
+    });
+  });
+  document.querySelectorAll('.meal-name').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = parseInt(e.target.closest('.meal-entry').dataset.i);
+      draft.meals[i].name = e.target.value;
+    });
+  });
+  document.querySelectorAll('.meal-cal').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const i = parseInt(e.target.closest('.meal-entry').dataset.i);
+      draft.meals[i].cal = e.target.value ? parseInt(e.target.value) : null;
+      document.querySelector('.meal-total').textContent =
+        draft.meals.reduce((s, m) => s + (Number(m.cal) || 0), 0) + ' cal logged';
+    });
+  });
+  document.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      draft.meals.splice(parseInt(btn.dataset.del), 1);
+      renderToday();
+    });
+  });
+
+  document.getElementById('save-today').addEventListener('click', () => {
+    db[key] = JSON.parse(JSON.stringify(draft));
+    saveAll(db);
+    showToast('Saved — ' + computePoints(db[key]) + ' points today ✨');
+    renderToday();
+  });
+}
+
+/* ---------- Render: Week ---------- */
+function renderWeek() {
+  const dates = Object.keys(db).sort().slice(-7);
+  const weights = dates.map(d => db[d].weight).filter(w => w !== null && w !== undefined);
+  const avg = weights.length ? (weights.reduce((a,b) => a+b, 0) / weights.length) : null;
+  const pctChange = avg !== null ? ((CONFIG.startWeight - avg) / CONFIG.startWeight * 100) : null;
+  const totalPts = dates.reduce((s, d) => s + computePoints(db[d]), 0);
+  const workoutDays = dates.filter(d => db[d].workoutDone).length;
+  const goalHits = dates.filter(d => CONFIG.workoutGoalDays.includes(dayName(d)) && db[d].workoutDone).length;
+
+  let h = `
+  <header class="top">
+    <div class="mark">Glow Up <span class="emoji">🌸</span></div>
+    <div class="date">This week</div>
+  </header>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">📊 7-Day Summary</div></div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="num">${avg !== null ? avg.toFixed(1) : '—'}</div>
+        <div class="lbl">Avg weight</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">${pctChange !== null ? pctChange.toFixed(1) + '%' : '—'}</div>
+        <div class="lbl">Change vs start</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">${totalPts}</div>
+        <div class="lbl">Points earned</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">${workoutDays}</div>
+        <div class="lbl">Workout days</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">🔥 Workout goal (Tue / Thu / Fri)</div></div>
+    <div class="day-pills">
+      ${CONFIG.workoutGoalDays.map(d => {
+        const found = dates.find(dt => dayName(dt) === d);
+        const hit = found && db[found].workoutDone;
+        return `<div class="day-pill goal-day ${hit ? 'done' : ''}">${d}</div>`;
+      }).join('')}
+    </div>
+    <div class="coffee-target" style="margin-top:9px;">${goalHits} of 3 goal days hit this week${workoutDays > goalHits ? ` · ${workoutDays - goalHits} bonus day(s)` : ''}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">🎯 Starting weight</div></div>
+    <div class="coffee-target">Locked at ${CONFIG.startWeight} lbs — % change is calculated against this number.</div>
+  </div>
+  `;
+  document.getElementById('app').innerHTML = h;
+}
+
+/* ---------- Render: History ---------- */
+function renderHistory() {
+  const dates = Object.keys(db).sort().reverse();
+  let h = `
+  <header class="top">
+    <div class="mark">Glow Up <span class="emoji">🌸</span></div>
+    <div class="date">Log</div>
+  </header>
+  <div class="card">
+  `;
+  if (!dates.length) {
+    h += `<div class="empty-state">No entries yet — log today to start your streak ✨</div>`;
+  } else {
+    h += dates.map(d => {
+      const e = db[d];
+      const label = new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      return `<div class="hist-row">
+        <div class="hist-date">${label}</div>
+        <div class="hist-meta">
+          <span>${e.weight ? e.weight + ' lbs' : '—'}</span>
+          <span class="hist-pts">${computePoints(e)} pt</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  h += `</div>`;
+  document.getElementById('app').innerHTML = h;
+}
+
+/* ---------- Tab control ---------- */
+function setTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if (tab === 'today') renderToday();
+  else if (tab === 'week') renderWeek();
+  else renderHistory();
+}
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+
+setTab('today');
+</script>
+</body>
+</html>
